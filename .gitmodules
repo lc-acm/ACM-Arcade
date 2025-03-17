@@ -1,0 +1,3 @@
+[submodule "source/picosweeper-carsonr"]
+	path = source/picosweeper-carsonr
+	url = https://github.com/Carsonthemonkey/picosweeper.git
