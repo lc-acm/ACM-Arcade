@@ -10,6 +10,7 @@ PICO8_EXECUTABLE = os.getenv("PICO8")
 
 def build_game(path: Path):
     os.system(f"{PICO8_EXECUTABLE} {path} -export carts/{path.stem}.p8.png")
+    return f"{path.stem}.p8.png"
 
 
 def get_p8_file_for_game(game_dir: Path) -> str:
@@ -53,7 +54,23 @@ def get_p8_file_for_game(game_dir: Path) -> str:
     # return
 
 
+def favorite_game(home_path: str, game_path: str):
+    with open(f"{home_path}/favourites.txt", "w") as f:
+        # Double extension removal for both .p8 and .png
+        game_name = Path(Path(game_path).stem).stem
+        f.write(
+            f"""|                     |                     |0      |                 |{game_path} |{game_name}\n"""
+        )
+
+
 def build_all_games():
+    if not os.path.exists("./home"):
+        os.mkdir("./home")
+    if not os.path.exists("./carts"):
+        os.mkdir("./carts")
+    # Splore boots to favourites by default. We add all built games to favourites so the user doesn't have to navigate throught splore at all
+    elif os.path.exists("./home/favourites.txt"):
+        os.remove("./home/favourites.txt")
     for directory in Path("./source").iterdir():
         if not directory.is_dir():
             continue
@@ -62,12 +79,11 @@ def build_all_games():
         except FileNotFoundError as e:
             print(e)
             continue
-        build_game(Path(program_path))
+        built_path = build_game(Path(program_path))
+        favorite_game("./home", built_path)
 
 
 # for file in os.listdir('./source')
 
 if __name__ == "__main__":
-    # get_p8_file_for_game('./source/picosweeper')
     build_all_games()
-    # build_game(Path("./source/picosweeper-carsonr/picosweeper.p8"))
